@@ -1,10 +1,10 @@
 # Vuldetexp
 基于图神经网络的切片级漏洞检测及解释方法
 
-数据集使用的是这篇文章Jiahao Fan, Yi Li, Shaohua Wang, and Tien Nguyen. 2020. A C/C++ Code Vulnerability Dataset with Code Changes and CVE Summaries. In The 2020 International Conference on Mining Software Repositories (MSR). IEEE.链接：https://drive.google.com/file/d/1-0VhnHBp9IGh90s2wCNjeCMuy70HPl8X/view?usp=sharing
+数据集使用的是这篇文章Jiahao Fan, Yi Li, Shaohua Wang, and Tien Nguyen. 2020. A C/C++ Code Vulnerability Dataset with Code Changes and CVE Summaries. In The 2020 International Conference on Mining Software Repositories (MSR). 链接：https://drive.google.com/file/d/1-0VhnHBp9IGh90s2wCNjeCMuy70HPl8X/view?usp=sharing
 
 数据预处理部分：
-首先执行preprocess中的raw_data_preprocess.py读取csv文件获得漏洞减号行相关信息
+首先执行preprocess中的raw_data_preprocess.py读取csv文件获得漏洞减号行相关信息,漏洞减号行格式见nvd_vul_lineinfo.json样例
 
 1.代码标准化：
 执行preprocess/code_normalize内的normalization.py文件，注意修改路径
