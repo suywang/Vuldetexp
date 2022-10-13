@@ -4,7 +4,7 @@ from torch import nn
 import torch.nn.functional as f
 
 
-class DevignModel(nn.Module):
+class VuldetexpModel(nn.Module):
     def __init__(self, input_dim, output_dim, max_edge_types=2, num_steps=6):
         super(DevignModel, self).__init__()
         self.inp_dim = input_dim #100
