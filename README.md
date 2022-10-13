@@ -30,6 +30,7 @@
 
 漏洞解释模型中解释
 这里可以选择我们改进过的GNNExplainer或者PGExplainer GNNExplainer运行benchmar/kernal/pipeline.py,注意参数修改在args.py中,主要的加载部分,首先数据集就是带解释的切片,即数据预处理部分完成节点嵌入的切片;其次是加载模型,路径在args里面设置,选择漏洞检测模型保存的ckpt文件即可,后面注意指定一下输出重要节点的路径.PGE同理不作详细叙述,代码很简单,只需要该路径即可.
+interpre_example给出了RQ3中实例的源代码，切片dot文件及解释结果行号
 
 还需要提醒的是,如果有遇到dot文件加载错误的问题,可以执行我们preprocess中的dot_fix.py. 最后解释效果评定代码在preprocess/intrepre_effect.py中,注意需要先执行lineinfo_dict.py从lineinfo中得到对应的行号.
 
