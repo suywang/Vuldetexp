@@ -6,7 +6,7 @@ import torch.nn.functional as f
 
 class VuldetexpModel(nn.Module):
     def __init__(self, input_dim, output_dim, max_edge_types=2, num_steps=6):
-        super(DevignModel, self).__init__()
+        super(VuldetexpModel, self).__init__()
         self.inp_dim = input_dim #100
         self.out_dim = output_dim #200
         self.max_edge_types = max_edge_types
