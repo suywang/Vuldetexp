@@ -17,7 +17,7 @@
 - 最后用-t export -r lineinfo_json, 生成包含全部cpg信息的lineinfo.json文件
 
 3.生成代码切片
-执行preprocess/slice_preocess内的main.py文件，注意输入包括lineinfo.json cpg.dot 以及修改vul_lines字典的路径
+执行preprocess/slice_preocess内的main.py文件，注意输入包括lineinfo.json pdg.dot 以及修改vul_lines字典的路径
 输出包括complete_pdg和slice_pdg
 
 4.训练w2v模型并完成嵌入
