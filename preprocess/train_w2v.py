@@ -137,18 +137,18 @@ def train_word_embedding(config_path: str):
         ]
         pool.close()
         pool.join()
-    cnt=0
-    for token in tokens:
-        if token == []:
-            cnt+=1
-    print(cnt)
-    for token_l in tokens:
-        tokens_list.extend(token_l)
+#     cnt=0
+#     for token in tokens:
+#         if token == []:
+#             cnt+=1
+#     print(cnt)
+#     for token_l in tokens:
+#         tokens_list.extend(token_l)
     print("training w2v...")
     print(len(tokens_list))
     num_workers = cpu_count(
     ) if config.num_workers == -1 else config.num_workers
-    model = Word2Vec(sentences=tokens_list, min_count=3, size=256,#vector_size=config.gnn.embed_size,
+    model = Word2Vec(sentences=tokens, min_count=3, size=256,#vector_size=config.gnn.embed_size,
                      max_vocab_size=config.dataset.token.vocabulary_size, workers=num_workers, sg=1)
     model.wv.save("/home/deepwukong/w2v.wv")
 
