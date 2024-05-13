@@ -34,4 +34,4 @@ interpre_example给出了RQ3中实例的源代码，切片dot文件及解释结�
 
 还需要提醒的是,如果有遇到dot文件加载错误的问题,可以执行我们preprocess中的dot_fix.py. 最后解释效果评定代码在preprocess/intrepre_effect.py中,注意需要先执行lineinfo_dict.py从lineinfo中得到对应的行号.
 
-最后版本问题,joern的版本是joern-cli_v1.1.172,可以在 https://github.com/joernio/joern 中查找历史版本下载. networkx版本是2.4或2.5都可以 其他缺少的包根据自己的环境直接pip install安装即可
+最后版本问题,joern的版本是joern-cli_v1.1.172,可以在 https://github.com/joernio/joern 中查找历史版本下载,我们同时也提供了joern需要用到的脚本文件graph-for-funcs.sc. networkx版本是2.4或2.5都可以 其他缺少的包根据自己的环境直接pip install安装即可
