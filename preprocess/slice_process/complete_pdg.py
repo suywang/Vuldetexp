@@ -8,23 +8,25 @@ from utils_dataset.objects.cpg.edge import Edge
 def ddg_edge_genearate(ddg_dot_path, idx):
     if ddg_dot_path[-1] != '/':
         ddg_dot_path += '/'
-    dot_path = ddg_dot_path + idx + '/'
-    dots = glob.glob(dot_path + '*.dot')
-    flag = 0
-    for dot in dots:
-        num = dot.rsplit("/")[-1][0]
+    dot=ddg_dot_path+ idx +'.dot'
+    #dot=ddg_dot_path+'1_'+ idx +'.dot'
+    #dot_path = ddg_dot_path + idx + '/'
+    #dots = glob.glob(dot_path + '*.dot')
+    #flag = 0
+    #for dot in dots:
+        #num = dot.rsplit("/")[-1][0]
         # 默认取第0个(0-ddg.dot)
         # 一般来讲0号包含的是整个函数的，其他序号可能是函数中其他Call的
-        if num.startswith('0'):
-            flag = 1
-            break
-    if flag == 0:
-        return False
-    log_path = '/home/Devign-master_git/dataset/log.txt'
-    # graph =  pydot.graph_from_dot_file(log_path,dot)[0]
-    # ddg_edge_list = graph.get_edges()
+        #if num.startswith('0'):
+            #flag = 1
+            #break
+    #if flag == 0:
+        #return False
+    #log_path = '/home/mytest/slice/log.txt'
+    #graph =  pydot.graph_from_dot_file(dot)[0]
+    #ddg_edge_list = graph.get_edges()
     try:
-        graph =  pydot.graph_from_dot_file(log_path, dot)[0]
+        graph =  pydot.graph_from_dot_file(dot)[0]
         ddg_edge_list = graph.get_edges()
     except:
         return []
@@ -60,7 +62,10 @@ def complete_pdg(data_nodes_tmp, ddg_edge_list):
             continue
 
         edge_tmp = {}
-        ddg_edge_name = 'Ddg@'+dot_edge_attr
+        if dot_edge_attr.find('DDG') != -1:
+            ddg_edge_name = 'Ddg@'+ dot_edge_attr
+        else:
+            ddg_edge_name = 'Cdg@'+ dot_edge_attr
         ddg_edge_name_tmp = ddg_edge_name
         edge_tmp['id'] = ddg_edge_name
         edge_tmp['in'] = node_in

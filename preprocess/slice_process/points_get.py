@@ -1,6 +1,39 @@
 import os
 import re
-import pickle
+import pickle,json
+
+
+def get_gt_node(node_dict,dict_path,name,label_path):
+    pointer_node_list = []
+    identifier_list = []
+    with open(label_path,'r') as lp:
+       vul_line=json.load(lp)
+    try:
+        # line_label = vul_line[name[2:]]
+        line_label = vul_line[name[2:]+'.c']
+    except:
+        line_label = []
+    if line_label == []:
+        return []
+    func_name = name.split('/')[-1]
+    dict_name = func_name+'.json'
+    with open(dict_path+dict_name,'r') as rf1:
+        try:
+            node2line_dict=json.load(rf1)
+        except:
+            return []
+    for node in node_dict:
+        node_type = node_dict[node].node_type
+        node_num = node_dict[node].id.split('id=')[-1].split(']')[0]
+        for node_x in node2line_dict:
+            if node_x['node'] == node_num:
+                if int(node_x['line_num']) in line_label:
+                    pointer_node_list.append(node_dict[node])
+                break
+    pointer_node_list = list(set(pointer_node_list))
+    return pointer_node_list
+
+
 
 
 def get_pointers_node(node_dict):
@@ -43,7 +76,7 @@ def get_all_array(node_dict):
     return array_node_list
     
 def get_all_sensitiveAPI(node_dict):
-    with open("/home/Devign-master/slice/sensitive_func.pkl", "rb") as fin:
+    with open("/home/mytest/slice/sensitive_func.pkl", "rb") as fin:
         list_sensitive_funcname = pickle.load(fin)
     call_node_list = []
     call_type = "Call"   

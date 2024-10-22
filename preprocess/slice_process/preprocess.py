@@ -2,7 +2,8 @@ import os, sys
 import re
 import json
 import glob
-sys.path.append("/home/mVulPreter")
+from tqdm import tqdm
+sys.path.append("/home/mytest")
 from utils_dataset.objects.cpg.function import Function
 from collections import OrderedDict
 from slice.points_get import *
@@ -18,7 +19,7 @@ def joern_process(in_path):
         in_path += '/'
     files = glob.glob(in_path + '*.json')
     container = []
-    for file in files:
+    for file in tqdm(files):
         if os.path.exists(file):
             with open(file,'r',encoding='utf-8') as jf:
                 cpg_string = jf.read()

@@ -79,6 +79,72 @@ def program_slice(ast_all_node_list, startnode):
     return _slice
 
 
+def program_slice_back(ast_all_node_list, startnode):
+    _slice = []
+    flag = 'back'
+    back_list = program_slice_backFor(ast_all_node_list, startnode, flag)
+    # flag = 'for'
+    # for_list = program_slice_backFor(ast_all_node_list, startnode, flag)
+    for back_node in back_list:
+        _slice.append(back_node)
+    # for for_node in for_list:
+    #     if for_node not in _slice:
+    #         _slice.append(for_node)
+    
+    if len(_slice) == 1:
+        return None
+    elif len(_slice) == 2:
+        for node in _slice:
+            if node.label == 'MethodReturn' or node.label == 'MethodParameterIn':
+                return None
+
+    print(startnode.id, startnode.properties.line_number())
+    line_num_dict = {}
+    for node in _slice:
+        line_num = int(node.properties.line_number())
+        node_type = node.label
+        if line_num not in line_num_dict.keys():
+            line_num_dict[line_num] = []
+        line_num_dict[line_num].append(node_type)
+    line_dict = sorted(line_num_dict)
+    for line_num in line_dict:
+        print('\t',line_num, line_num_dict[line_num])
+    print('---------------------\n')
+    return _slice
+
+
+def gt_slice(ast_all_node_list, gt_node_list):
+    gt_slice_list = []
+    gt_list = []
+
+    for gt_node_id in gt_node_list:
+        gt_node = ast_all_node_list[gt_node_id.id]
+        if gt_node not in gt_list:
+            gt_list.append(gt_node)
+
+    i = 0
+    while(len(gt_list) != 0):
+        gt_node = gt_list[i]
+        slice_list = program_slice(ast_all_node_list, gt_node)
+        if slice_list == None:
+            i += 1
+            if i == len(gt_list):
+                break
+            continue
+        if slice_list not in gt_slice_list:
+            gt_slice_list.append(slice_list)
+        flag = 0
+        for node in slice_list:
+            if node in gt_list:
+                gt_list.remove(node)
+                flag = 1
+                i = 0
+        if flag == 0:
+            i += 1            
+    return gt_slice_list
+
+
+
 def pointer_slice(ast_all_node_list, pointer_node_list):
     _pointer_slice_list = []
     pointer_list = []

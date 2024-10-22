@@ -6,17 +6,26 @@ import pickle
 def generate_complete_json(data_nodes, complete_pdg_path, func_name):
     if complete_pdg_path[-1] != '/':
         complete_pdg_path += '/'
+    #dot_path = complete_pdg_path +'1_'+ func_name + '.dot'
     dot_path = complete_pdg_path + func_name + '.dot'
-    if os.path.exists(dot_path):
-        return
+    # if os.path.exists(dot_path):
+    #     #print('1_'+ func_name + '.dot'+'has been processed')
+    #     return
     graph = pydot.Dot(func_name, graph_type = 'digraph')
+    #pdg_data_nodes = {}
     for node in data_nodes:
         node_id = '"' + data_nodes[node].id.split("id=")[-1][:-1] + '"'
         node_type = data_nodes[node].node_type
         node_code = data_nodes[node].properties.code()
         node_label = "("+node_type+','+node_code+")"
         dot_node = pydot.Node(node_id, label = node_label)
-        graph.add_node(dot_node)
+        node_edges = data_nodes[node].edges
+        for node_edge in node_edges:
+            node_edge_label = node_edges[node_edge].type
+            if node_edge_label != 'Ast' and node_edge_label != 'Cfg':
+                graph.add_node(dot_node)
+                #pdg_data_nodes.update({node:data_nodes[node]})
+                break
     for node in data_nodes:
         node_edges = data_nodes[node].edges
         for node_edge in node_edges:
@@ -25,28 +34,44 @@ def generate_complete_json(data_nodes, complete_pdg_path, func_name):
             node_out_id = '"' + node_edges[node_edge].node_out.split("id=")[-1][:-1] + '"'
             if node_edge_label == 'Ast':
                 node_edge_label = 'AST: '
+                continue
             elif node_edge_label == 'Cfg':
                 node_edge_label = 'CFG: '
+                continue
             else:
-                ddg_var = node_edge.split("@")[-1].split("#")[0]
-                node_edge_label = 'DDG: ' + ddg_var
+                ddg_var = node_edge.split("@")[-1]
+                node_edge_label =  ddg_var
             dot_edge = pydot.Edge(node_in_id, node_out_id, label = node_edge_label)
             graph.add_edge(dot_edge)
     graph.write_raw(dot_path)
+    
 
 
 
 def generate_sub_json(all_data_nodes, _point_slice_list, sub_graph_path, func_name, points_name, label_path):
     if sub_graph_path[-1] != '/':
         sub_graph_path += '/'
+    # func_name2='1_'+func_name
+    # func_name,func_name2=func_name2,func_name
     sub_graph_file_path = sub_graph_path + func_name + '/'
-    if func_name.startswith("1_"):
-        with open(label_path, 'rb') as f_label:
-            label_dict = pickle.load(f_label)
-        label_list = label_dict[func_name]
+    # if os.path.exists(sub_graph_file_path):
+    #    print(func_name+' slice has been precessed!')
+    #    return 
+    # if func_name.startswith("1_"):
+    #     with open(label_path, 'rb') as f_label:
+    #         label_dict = json.load(f_label)
+    #     if func_name2+'.c' not in label_dict:
+    #         return False
+    #     else:
+    #         label_list = label_dict[func_name2+'.c']
+    #     # label_list = label_dict['CVE'+func_name.split('1_CVE')[-1]]
+    # if label_list == []:
+    #     return False
+
     func_name += points_name
     iter = 0
     flag = 0
+    ground_truth = []
     for subgraph in _point_slice_list:
         if len(subgraph) == 1:
             continue
@@ -70,15 +95,18 @@ def generate_sub_json(all_data_nodes, _point_slice_list, sub_graph_path, func_na
             continue # 排除除去头部节点只剩下一个代码行节点的切片
         
         # 开始标注
-        if func_name.startswith("1_"):
-            novul_flag = 1
-            for line in line_num_list:
-                line_num = int(line)
-                if line_num in label_list:
-                    novul_flag = 0
-            if novul_flag == 1:
-                func_name = "0_" + func_name[2:]
-            
+        # if func_name.startswith("1_"):
+        #     novul_flag = 1
+        #     for line in line_num_list:
+        #         line_num = int(line)
+        #         if line_num in label_list:
+        #             novul_flag = 0
+        #             ground_truth = line_num_list
+        #             break
+        #     if novul_flag == 1:
+        #         func_name = "0_" + func_name[2:]
+        #         continue
+
         if not os.path.exists(sub_graph_file_path):
             os.mkdir(sub_graph_file_path)
         
@@ -90,7 +118,12 @@ def generate_sub_json(all_data_nodes, _point_slice_list, sub_graph_path, func_na
             node_code = node.properties.code()
             node_label = "("+node_type+','+node_code+")"
             dot_node = pydot.Node(node_id, label = node_label)
-            graph.add_node(dot_node)
+            node_edges = node.edges
+            for node_edge in node_edges:
+                node_edge_label = node_edges[node_edge].type
+                if node_edge_label != 'Ast' and node_edge_label != 'Cfg':
+                    graph.add_node(dot_node)
+                    break
         for node in data_nodes:
             node_edges = node.edges
             for node_edge in node_edges:
@@ -99,11 +132,14 @@ def generate_sub_json(all_data_nodes, _point_slice_list, sub_graph_path, func_na
                 node_out_id = '"' + node_edges[node_edge].node_out.split("id=")[-1][:-1] + '"'
                 if node_edge_label == 'Ast':
                     node_edge_label = 'AST: '
+                    continue
                 elif node_edge_label == 'Cfg':
                     node_edge_label = 'CFG: '
+                    continue
                 else:
                     ddg_var = node_edge.split("@")[-1].split("#")[0]
-                    node_edge_label = 'DDG: ' + ddg_var
+                    #node_edge_label = 'DDG: ' + ddg_var
+                    node_edge_label = ddg_var
                 _edge_info = [node_in_id, node_out_id, node_edge_label]
                 if _edge_info not in edge_record:
                     edge_record.append([node_in_id, node_out_id, node_edge_label])
@@ -133,13 +169,26 @@ def generate_sub_json(all_data_nodes, _point_slice_list, sub_graph_path, func_na
             dot_edge = pydot.Edge(edge_info[0], edge_info[1], label = edge_info[2])
             graph.add_edge(dot_edge)
 
-
         dot_path = sub_graph_file_path + func_name + "#" + str(iter) + '.dot'
         if os.path.exists(dot_path):
             return
         graph.write_raw(dot_path)
         flag = 1
         iter += 1
+
+        # if int(func_name[0]) == 1:
+        #     # dot_path = sub_graph_file_path + func_name + "#" + str(iter) + '.dot'
+        #     # if os.path.exists(dot_path):
+        #     #     return
+        #     # graph.write_raw(dot_path)
+        #     gt_path = sub_graph_file_path + func_name + "#" + str(iter) + '.json'
+        #     with open(gt_path,'w') as f1:
+        #         json.dump(ground_truth,f1)
+        #     ground_truth = []
+        #     f1.close()
+
+        #     flag = 1
+        #     iter += 1
     if flag == 1:
         return True
     else:
