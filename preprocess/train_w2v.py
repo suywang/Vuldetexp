@@ -119,18 +119,14 @@ def train_word_embedding(config_path: str):
     cweid = config.dataset.name
     root = config.data_folder
     #train_json = f"{root}/{cweid}/train.json"
-    train_path = "/home/VulGnnExp/com_pdg/0_novul"
-    train_path2 = "/home/VulGnnExp/com_pdg/1_vul"
-    train_path3 = "/home/Dataset/BigVul_new/3_pdg/0_compdg"
-    train_path4 = "/home/Dataset/BigVul_new/3_pdg/1_compdg"
+    train_path = "/home/com_pdg/0_novul"
+    train_path2 = "/home/com_pdg/1_vul"
     # train_path3 = "/home/my_CodeTransformationTest2/myvulexp/com_pdg/15"
     paths2=glob.glob(train_path2+'/*')
     #with open(train_json, "r") as f:
         #paths = json.load(f)
     paths=glob.glob(train_path+'/*')
-    path3=glob.glob(train_path3+'/*.dot')
-    path4=glob.glob(train_path4+'/*.dot')
-    paths = paths + paths2 + path3 + path4
+    paths = paths + paths2
     tokens_list = list()
     with Manager():
         pool = Pool(8)
@@ -160,7 +156,7 @@ def train_word_embedding(config_path: str):
     ) if config.num_workers == -1 else config.num_workers
     model = Word2Vec(sentences=tokens_list, min_count=3,seed=202406, vector_size=config.gnn.embed_size,
                      max_vocab_size=config.dataset.token.vocabulary_size, workers=num_workers, sg=1)
-    model.wv.save("/home/VulGnnExp/big_vul_new.wv")
+    model.wv.save("/home/big_vul_new.wv")
 
 
 def load_wv(config_path: str):
