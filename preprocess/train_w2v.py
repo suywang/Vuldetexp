@@ -83,14 +83,16 @@ def process_parallel(path: str, split_token: bool):
     try:
         pdg = nx.drawing.nx_pydot.read_dot(path)
         for index, node in enumerate(pdg.nodes()):
-                node_index[node] = index
-                try:
-                    label = pdg.nodes[node]['label'][1:-1]
-                except:
-                    continue
-                code = label.partition(',')[2]
-                for token in tokenize_code_line(code):
-                    tokens_list.append(token)
+            token_line = []
+            node_index[node] = index
+            try:
+                label = pdg.nodes[node]['label'][1:-1]
+            except:
+                continue
+            code = label.partition(',')[2]
+            for token in tokenize_code_line(code):
+                token_line.append(token)
+            tokens_list.append(token_line)
     except:
         pass
     #for ln in xfg:
@@ -117,13 +119,21 @@ def train_word_embedding(config_path: str):
     cweid = config.dataset.name
     root = config.data_folder
     #train_json = f"{root}/{cweid}/train.json"
-    train_path = "/home/mytest/nvd/all_slices"
+    train_path = "/home/VulGnnExp/com_pdg/0_novul"
+    train_path2 = "/home/VulGnnExp/com_pdg/1_vul"
+    train_path3 = "/home/Dataset/BigVul_new/3_pdg/0_compdg"
+    train_path4 = "/home/Dataset/BigVul_new/3_pdg/1_compdg"
+    # train_path3 = "/home/my_CodeTransformationTest2/myvulexp/com_pdg/15"
+    paths2=glob.glob(train_path2+'/*')
     #with open(train_json, "r") as f:
         #paths = json.load(f)
     paths=glob.glob(train_path+'/*')
+    path3=glob.glob(train_path3+'/*.dot')
+    path4=glob.glob(train_path4+'/*.dot')
+    paths = paths + paths2 + path3 + path4
     tokens_list = list()
     with Manager():
-        pool = Pool(USE_CPU)
+        pool = Pool(8)
 
         process_func = functools.partial(process_parallel,
                                          split_token=config.split_token)
@@ -137,20 +147,20 @@ def train_word_embedding(config_path: str):
         ]
         pool.close()
         pool.join()
-#     cnt=0
-#     for token in tokens:
-#         if token == []:
-#             cnt+=1
-#     print(cnt)
-#     for token_l in tokens:
-#         tokens_list.extend(token_l)
+    # cnt=0
+    # for token in tokens:
+    #     if token == []:
+    #         cnt+=1
+    # print(cnt)
+    for token_l in tokens:
+        tokens_list.extend(token_l)
     print("training w2v...")
     print(len(tokens_list))
     num_workers = cpu_count(
     ) if config.num_workers == -1 else config.num_workers
-    model = Word2Vec(sentences=tokens, min_count=3, size=256,#vector_size=config.gnn.embed_size,
+    model = Word2Vec(sentences=tokens_list, min_count=3,seed=202406, vector_size=config.gnn.embed_size,
                      max_vocab_size=config.dataset.token.vocabulary_size, workers=num_workers, sg=1)
-    model.wv.save("/home/deepwukong/w2v.wv")
+    model.wv.save("/home/VulGnnExp/big_vul_new.wv")
 
 
 def load_wv(config_path: str):
